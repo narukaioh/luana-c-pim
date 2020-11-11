@@ -14,6 +14,7 @@ typedef struct paciente {
   char nome[15];
   char sobrenome[15];
   char cpf[15];
+  int grupoRisco;
   Data dataNascimento;
 } Paciente;
 
@@ -24,14 +25,18 @@ int validar(Data data);
 Data dataNascimento(void);
 void buscar(int id);
 int calcularIdade(Data data);
-int criarId(void)
+int criarId(void);
 void cadastrar(void);
+int login(void);
 void menu (void);
+void listar(void);
 
 int main() {
   clear();
+
   cadastrar();
-  buscar(1);
+  listar();
+  // buscar(1);
   return 0;
 }
 
@@ -146,6 +151,13 @@ int criarId() {
 	return (tamanhoArquivo/tamanhoStructure) + 1;
 }
 
+int grupoRisco (int idade) {
+  if (idade > 60) {
+    return 1;
+  }
+  return 0;
+}
+
 void cadastrar() {
   FILE *file;
   Paciente paciente;
@@ -162,11 +174,12 @@ void cadastrar() {
   printf("CPF: ");
   scanf("%s", &paciente.cpf);
 
-  printf("Data nascimento... \n");
+  printf("Data nascimento: \n");
   paciente.dataNascimento = dataNascimento();
 
   paciente.idade = calcularIdade(paciente.dataNascimento);
-  printf("%d", paciente.idade);
+
+  paciente.grupoRisco = grupoRisco(paciente.idade);
 
   fwrite(&paciente, sizeof(paciente), 1, file);
   fclose(file);
@@ -174,6 +187,38 @@ void cadastrar() {
 
 int login () {
   return 0;
+}
+
+void listar() {
+  FILE * file;
+  Paciente paciente;
+  file = fopen("database/pacientes", "rb");
+  clear();
+  printf("====================================\n");
+  printf("======== LISTA DE PACIENTES ========\n");
+  printf("====================================\n");
+
+  printf(" ID\t IDADE \t GRUPO RISCO\t NOME\n");
+  while(1) {
+    fread(&paciente, sizeof(paciente), 1, file);
+    if (feof(file)) { break; }
+
+    printf("\n");
+    printf(" %d\t", paciente.id);
+    printf(" %d\t", paciente.idade);
+    
+    if (paciente.grupoRisco == 0) {
+      printf(" nao");
+    } else {
+      printf(" sim");
+    }
+
+    printf("\t\t %s\t\t", paciente.nome);
+  }
+
+  printf("\n\n====================================\n");
+
+  fclose(file);
 }
 
 void menu () {
@@ -186,9 +231,10 @@ void menu () {
       printf("================================\n");
       printf("================================\n");
       printf("(1) == CADASTRAR PACIENTE ======\n");
-      printf("(2) == BUSCAR PACIENTE (id) ====\n");
-      printf("(3) == BUSCAR PACIENTE (nome) ==\n");
-      printf("(4) == SAIR ====================\n");
+      printf("(2) == LISTAR PACIENTES ========\n");
+      printf("(3) == BUSCAR PACIENTE (id) ====\n");
+      printf("(4) == BUSCAR PACIENTE (nome) ==\n");
+      printf("(5) == SAIR ====================\n");
       printf("================================\n");
       printf("Digite sua opcao.: ");
       scanf("%d", &opcao);
@@ -198,13 +244,14 @@ void menu () {
           break;
         }
         case 2: {
+          listar();
           break;
         }
         case 3: {
           break;
         }
         default: {
-          opcao = 4;
+          opcao = 5;
           break;
         }
       }
