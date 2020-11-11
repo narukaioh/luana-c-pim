@@ -17,12 +17,16 @@ typedef struct paciente {
   Data dataNascimento;
 } Paciente;
 
-void cadastrar(void);
-Data dataNascimento(void);
-int validar(Data data);
-int anoAtual(void);
 void clear(void);
+int anoAtual(void);
+int mesAtual(void);
+int validar(Data data);
+Data dataNascimento(void);
 void buscar(int id);
+int calcularIdade(Data data);
+int criarId(void)
+void cadastrar(void);
+void menu (void);
 
 int main() {
   clear();
@@ -166,4 +170,49 @@ void cadastrar() {
 
   fwrite(&paciente, sizeof(paciente), 1, file);
   fclose(file);
+}
+
+int login () {
+  return 0;
+}
+
+void menu () {
+  int opcao;
+  if (login() == 0) {
+    do {
+      clear();
+      printf("================================\n");
+      printf("======== MENU PRINCIPAL ========\n");
+      printf("================================\n");
+      printf("================================\n");
+      printf("(1) == CADASTRAR PACIENTE ======\n");
+      printf("(2) == BUSCAR PACIENTE (id) ====\n");
+      printf("(3) == BUSCAR PACIENTE (nome) ==\n");
+      printf("(4) == SAIR ====================\n");
+      printf("================================\n");
+      printf("Digite sua opcao.: ");
+      scanf("%d", &opcao);
+      switch(opcao) {
+        case 1: {
+          cadastrar();
+          break;
+        }
+        case 2: {
+          break;
+        }
+        case 3: {
+          break;
+        }
+        default: {
+          opcao = 4;
+          break;
+        }
+      }
+    } while (opcao != 4);
+  } else {
+    clear();
+    printf("================================\n");
+    printf("=========== CADASTRO ===========\n");
+    printf("================================\n");
+  }
 }
