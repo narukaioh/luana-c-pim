@@ -37,7 +37,7 @@ int criarPacienteId(void);
 void cadastrar(void);
 int login(void);
 void menu (void);
-void listar(void);
+void listar(char * database, char * titulo);
 
 int main() {
   clear();
@@ -239,10 +239,10 @@ int descobrirComorbidades() {
 }
 
 int grupoRisco (int idade) {
-  if (idade > 60) {
-    return 1;
+  if (idade >= 65) {
+    return 0;
   }
-  return 0;
+  return 1;
 }
 
 int pacienteCritico(Paciente paciente) {
@@ -284,6 +284,7 @@ void cadastrar() {
 
   paciente.grupoRisco = grupoRisco(paciente.idade);
 
+
   if (pacienteCritico(paciente) == 0) {
     fwrite(&paciente, sizeof(paciente), 1, file_paciente_critico);
   }
@@ -312,14 +313,14 @@ int login () {
   return buscarUsuario();
 }
 
-void listar() {
+void listar(char * database, char * titulo) {
   FILE * file;
   Paciente paciente;
   char pause;
-  file = fopen("database/pacientes", "rb");
-  clear();
+  printf("\n\n %s \n\n", database);
+  file = fopen(database, "rb");
   printf("==============================================================\n");
-  printf("===================== LISTA DE PACIENTES =====================\n");
+  printf("\t\t\t %s\n", titulo);
   printf("==============================================================\n");
 
   printf(" ID\t %-10s \t IDADE \t %-10s \t GRUPO RISCO\n", "NOME", "CPF");
@@ -334,15 +335,15 @@ void listar() {
     printf(" %-10s\t", paciente.cpf);
     
     if (paciente.grupoRisco == 0) {
-      printf(" nao");
-    } else {
       printf(" sim");
+    } else {
+      printf(" nao");
     }
 
   }
 
   printf("\n\n==============================================================\n");
-  printf("\nDeseja sair? (S/N) ");
+  printf("\nDeseja sair da listagem? (S/N) ");
   fclose(file);
 }
 
@@ -352,16 +353,17 @@ void menu () {
     if (login() == 0) {
       do {
         clear();
-        printf("================================\n");
-        printf("======== MENU PRINCIPAL ========\n");
-        printf("================================\n");
-        printf("================================\n");
-        printf("(1) == CADASTRAR PACIENTE ======\n");
-        printf("(2) == LISTAR PACIENTES ========\n");
-        printf("(3) == CADASTRO USUARIO ========\n");
-        printf("(4) == BUSCAR PACIENTE (nome) ==\n");
-        printf("(5) == SAIR ====================\n");
-        printf("================================\n");
+        printf("===================================\n");
+        printf("======== MENU PRINCIPAL ===========\n");
+        printf("===================================\n");
+        printf("===================================\n");
+        printf("(1) == CADASTRAR PACIENTE =========\n");
+        printf("(2) == LISTAR PACIENTES ===========\n");
+        printf("(3) == CADASTRO USUARIO ===========\n");
+        printf("(4) == BUSCAR PACIENTE ============\n");
+        printf("(5) == LISTAR PACIENTES CRITICOS ==\n");
+        printf("(6) == SAIR =======================\n");
+        printf("===================================\n");
         printf("Digite sua opcao.: ");
         scanf("%d", &opcao);
         switch(opcao) {
@@ -371,11 +373,11 @@ void menu () {
             break;
           }
           case 2: {
-            char condicaoListar = 'N';
+            char condicaoListarP = 'N';
             do {
-              listar();
-              scanf("%c", &condicaoListar);
-            } while(condicaoListar != 'S');
+              listar("database/pacientes", "LISTA DE PACIENTES");
+              scanf("%c", &condicaoListarP);
+            } while(condicaoListarP != 'S');
             break;
           }
           case 3: {
@@ -411,15 +413,23 @@ void menu () {
             } while(condicaoListar != 'S');
             break;
           }
+          case 5: {
+            char condicaoListar = 'N';
+            do {
+              listar("database/pacientes_criticos", "LISTA DE PACIENTES CRITICOS");
+              scanf("%c", &condicaoListar);
+            } while(condicaoListar != 'S');
+            break;
+          }
           default: {
-            opcao = 5;
+            opcao = 6;
             break;
           }
         }
-      } while (opcao != 5);
+      } while (opcao != 6);
     } else {
       imprimirCabecalho("CADASTRO DE USUARIO");
       cadastrarUsuario();
     }
-  } while (opcao != 5);
+  } while (opcao != 6);
 }
