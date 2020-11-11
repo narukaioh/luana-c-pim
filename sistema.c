@@ -43,6 +43,7 @@ void cadastrarUsuario(void);
 int login(void);
 void listar(char * database, char * titulo);
 void menu (void);
+int imprimirCabecalhoMenu(void);
 
 int main() {
   clear();
@@ -356,20 +357,7 @@ void menu () {
   do {
     if (login() == 0) {
       do {
-        clear();
-        printf("===================================\n");
-        printf("======== MENU PRINCIPAL ===========\n");
-        printf("===================================\n");
-        printf("===================================\n");
-        printf("(1) == CADASTRAR PACIENTE =========\n");
-        printf("(2) == LISTAR PACIENTES ===========\n");
-        printf("(3) == CADASTRO USUARIO ===========\n");
-        printf("(4) == BUSCAR PACIENTE ============\n");
-        printf("(5) == LISTAR PACIENTES CRITICOS ==\n");
-        printf("(6) == SAIR =======================\n");
-        printf("===================================\n");
-        printf("Digite sua opcao.: ");
-        scanf("%d", &opcao);
+        opcao = imprimirCabecalhoMenu();
         switch(opcao) {
           case 1: {
             imprimirCabecalho("CADASTRAR PACIENTE");
@@ -436,4 +424,23 @@ void menu () {
       cadastrarUsuario();
     }
   } while (opcao != 6);
+}
+
+int imprimirCabecalhoMenu() {
+  int opcao;
+  clear();
+  printf("===================================\n");
+  printf("======== MENU PRINCIPAL ===========\n");
+  printf("===================================\n");
+  printf("===================================\n");
+  printf("(1) == CADASTRAR PACIENTE =========\n");
+  printf("(2) == LISTAR PACIENTES ===========\n");
+  printf("(3) == CADASTRO USUARIO ===========\n");
+  printf("(4) == BUSCAR PACIENTE ============\n");
+  printf("(5) == LISTAR PACIENTES CRITICOS ==\n");
+  printf("(6) == SAIR =======================\n");
+  printf("===================================\n");
+  printf("Digite sua opcao.: ");
+  scanf("%d", &opcao);
+  return opcao;
 }
