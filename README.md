@@ -29,4 +29,9 @@
   - nesse arquivo devem ser salvas as seguintes informacoes:
     cep, idade, cpf
 
+7) deve permitir que todas as informacoes dos usuarios e pacientes estejam em texto.
+  - criar um arquivo pacientes.txt com informacoes de todos os pacientes
+  - criar um arquivo pacientes_criticos.txt com informacoes de todos os pacientes criticos
+  - criar um arquivo usuarios.txt com todos os usuarios do sistema
+
 

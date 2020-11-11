@@ -9,6 +9,16 @@ typedef struct data {
   int ano;
 } Data;
 
+typedef struct endereco {
+  char CEP;
+  char rua;
+  int numero;
+  char bairro;
+  char cidade;
+  char complemento;
+  char estado;
+} Endereco;
+
 typedef struct paciente {
   int id;
   int idade;
@@ -17,7 +27,11 @@ typedef struct paciente {
   char cpf[15];
   int grupoRisco;
   int comorbidades;
+  char email;
+  int telefone;
   Data dataNascimento;
+  Data dataDiagnostico;
+  Endereco endereco;
 } Paciente;
 
 typedef struct Usuario {
@@ -48,6 +62,7 @@ void listarPacientes(char * database, char * titulo);
 void buscarPaciente(void);
 void imprimirPaciente(Paciente paciente);
 void imprimirPacienteCritico(Paciente paciente);
+char * formatarPaciente(Paciente paciente);
 
 int main() {
   clear();
@@ -264,11 +279,16 @@ int pacienteCritico(Paciente paciente) {
 
 void cadastrar() {
   FILE *file;
+  FILE *file_text;
   FILE *file_paciente_critico;
+  FILE *file_paciente_critico_text;
 
   Paciente paciente;
   file = fopen("database/pacientes", "ab");
+  file_text = fopen("database/pacientes.txt", "a+");
+
   file_paciente_critico = fopen("database/pacientes_criticos", "ab");
+  file_paciente_critico_text = fopen("database/pacientes_criticos.txt", "a+");
 
   paciente.id = criarPacienteId();
   printf("[ MATRICULA: %d ]\n", paciente.id);
@@ -296,11 +316,16 @@ void cadastrar() {
 
   if (pacienteCritico(paciente) == 0) {
     fwrite(&paciente, sizeof(paciente), 1, file_paciente_critico);
+    fputs(formatarPaciente(paciente), file_paciente_critico_text);
   }
 
   fwrite(&paciente, sizeof(paciente), 1, file);
+  fputs(formatarPaciente(paciente), file_text);
+
   fclose(file);
+  fclose(file_text);
   fclose(file_paciente_critico);
+  fclose(file_paciente_critico_text);
 }
 
 void cadastrarUsuario() {
@@ -473,14 +498,17 @@ void imprimirPaciente(Paciente paciente) {
 
 void imprimirPacienteCritico(Paciente paciente) {
     printf("\n");
-    printf(" %d\t", paciente.id);
-    printf(" %-10s\t", paciente.nome);
+    printf(" %s\t", paciente.endereco.CEP);
     printf(" %d\t", paciente.idade);
-    printf(" %-10s\t", paciente.cpf);
+    printf(" %-10s\t", paciente.nome);
     
     if (paciente.grupoRisco == 0) {
       printf(" sim");
     } else {
       printf(" nao");
     }
+}
+
+char * formatarPaciente(Paciente paciente) {
+  return "olaaa mundo!";
 }
