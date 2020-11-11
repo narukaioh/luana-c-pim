@@ -44,6 +44,7 @@ int login(void);
 void listar(char * database, char * titulo);
 void menu (void);
 int imprimirCabecalhoMenu(void);
+void listarPacientes(void);
 
 int main() {
   clear();
@@ -365,11 +366,7 @@ void menu () {
             break;
           }
           case 2: {
-            char condicaoListarP = 'N';
-            do {
-              listar("database/pacientes", "LISTA DE PACIENTES");
-              scanf("%c", &condicaoListarP);
-            } while(condicaoListarP != 'S');
+            listarPacientes();
             break;
           }
           case 3: {
@@ -443,4 +440,12 @@ int imprimirCabecalhoMenu() {
   printf("Digite sua opcao.: ");
   scanf("%d", &opcao);
   return opcao;
+}
+
+void listarPacientes () {
+  char condicaoListarP = 'N';
+  do {
+    listar("database/pacientes", "LISTA DE PACIENTES");
+    scanf("%c", &condicaoListarP);
+  } while(condicaoListarP != 'S');
 }
