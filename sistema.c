@@ -20,6 +20,25 @@ typedef struct paciente {
 Paciente cadastrar(void);
 Data dataNascimento(void);
 int validar(Data data);
+int anoAtual(void);
+void clear(void);
+
+int main()
+{
+  Paciente paciente;
+  clear();
+  paciente = cadastrar();
+
+  return 0;
+}
+
+void clear () {
+  for ( int i = 0; i < 50; i++ ) {
+    printf("\n");
+  }
+  system("clear");
+}
+
 
 int anoAtual () {
    time_t rawtime;
@@ -105,12 +124,4 @@ Paciente cadastrar() {
   scanf("%s", &paciente.cpf);
 
   return paciente;
-}
-
-int main()
-{
-  Paciente paciente;
-  paciente = cadastrar();
-
-  return 0;
 }
