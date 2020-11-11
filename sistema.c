@@ -18,6 +18,11 @@ typedef struct paciente {
   Data dataNascimento;
 } Paciente;
 
+typedef struct Usuario {
+  char login[10];
+  char senha[10];
+} Usuario;
+
 void clear(void);
 int anoAtual(void);
 int mesAtual(void);
@@ -37,7 +42,7 @@ int main() {
 
   // cadastrar();
   // listar();
-  buscarNome();
+  menu();
   return 0;
 }
 
@@ -132,7 +137,6 @@ void buscar(int id) {
 }
 
 void buscarNome() {
-
   FILE * file;
   Paciente paciente;
   int encontrados = 0;
@@ -173,6 +177,40 @@ void buscarNome() {
     printf("\nNao encontramos nenhuma ocorrencia com esse nome.");
   }
   fclose(file);
+}
+
+int buscarUsuario() {
+  FILE * file;
+  Usuario usuario;
+  int encontrados = 0;
+  char login[10];
+  char senha[10];
+
+  file = fopen("database/usuarios", "rb");
+
+  printf("\nCADASTRE seu LOGIN:");
+  scanf("%s",&login);
+
+  printf("\nCADASTRE seu SENHA:");
+  scanf("%s",&senha);
+  
+
+  while(1){
+    fread(&usuario,sizeof(usuario),1,file);
+    if(feof(file)) { break; }
+
+    if(strcmp(login, usuario.login) == 0 && strcmp(senha, usuario.senha) == 0) {
+      encontrados = 1;
+      break;
+    }
+  }
+  if(encontrados == 0) {
+    fclose(file);
+    printf("\nLogin não autorizado!.");
+    return 1;
+  }
+  fclose(file);
+  return 0;
 }
 
 int calcularIdade(Data data) {
@@ -230,8 +268,22 @@ void cadastrar() {
   fclose(file);
 }
 
+void cadastrarUsuario() {
+  FILE *file;
+  Usuario usuario;
+  file = fopen("database/usuarios", "ab");
+  printf("Digite seu login: ");
+  scanf("%s", &usuario.login);
+
+  printf("Digite sua senha: ");
+  scanf("%s", &usuario.senha);
+
+  fwrite(&usuario, sizeof(usuario), 1, file);
+  fclose(file);
+}
+
 int login () {
-  return 0;
+  return buscarUsuario();
 }
 
 void listar() {
@@ -268,47 +320,48 @@ void listar() {
 
 void menu () {
   int opcao;
-  if (login() == 0) {
-    do {
-      clear();
-      printf("================================\n");
-      printf("======== MENU PRINCIPAL ========\n");
-      printf("================================\n");
-      printf("================================\n");
-      printf("(1) == CADASTRAR PACIENTE ======\n");
-      printf("(2) == LISTAR PACIENTES ========\n");
-      printf("(3) == BUSCAR PACIENTE (id) ====\n");
-      printf("(4) == BUSCAR PACIENTE (nome) ==\n");
-      printf("(5) == SAIR ====================\n");
-      printf("================================\n");
-      printf("Digite sua opcao.: ");
-      scanf("%d", &opcao);
-      switch(opcao) {
-        case 1: {
-          cadastrar();
-          break;
+    cadastrarUsuario();
+    if (login() == 0) {
+      do {
+        clear();
+        printf("================================\n");
+        printf("======== MENU PRINCIPAL ========\n");
+        printf("================================\n");
+        printf("================================\n");
+        printf("(1) == CADASTRAR PACIENTE ======\n");
+        printf("(2) == LISTAR PACIENTES ========\n");
+        printf("(3) == CADASTRO USUARIO ========\n");
+        printf("(4) == BUSCAR PACIENTE (nome) ==\n");
+        printf("(5) == SAIR ====================\n");
+        printf("================================\n");
+        printf("Digite sua opcao.: ");
+        scanf("%d", &opcao);
+        switch(opcao) {
+          case 1: {
+            cadastrar();
+            break;
+          }
+          case 2: {
+            listar();
+            break;
+          }
+          case 3: {
+            clear();
+            printf("===========================================\n");
+            printf("=========== CADASTRO DE USUARIO ===========\n");
+            printf("===========================================\n");
+            cadastrarUsuario();
+            break;
+          }
+          case 4: {
+            buscarNome();
+            break;
+          }
+          default: {
+            opcao = 5;
+            break;
+          }
         }
-        case 2: {
-          listar();
-          break;
-        }
-        case 3: {
-          break;
-        }
-        case 4: {
-          buscarNome();
-          break;
-        }
-        default: {
-          opcao = 5;
-          break;
-        }
-      }
-    } while (opcao != 4);
-  } else {
-    clear();
-    printf("================================\n");
-    printf("=========== CADASTRO ===========\n");
-    printf("================================\n");
-  }
+      } while (opcao != 4);
+    }
 }
