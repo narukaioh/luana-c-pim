@@ -1,0 +1,19 @@
+{
+  "name": "luana-c-pim",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "gcc sistema.c -o sistema && ./sistema"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/narukaioh/luana-c-pim.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/narukaioh/luana-c-pim/issues"
+  },
+  "homepage": "https://github.com/narukaioh/luana-c-pim#readme"
+}
