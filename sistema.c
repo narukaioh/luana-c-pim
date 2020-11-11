@@ -39,7 +39,6 @@ void clear () {
   system("clear");
 }
 
-
 int anoAtual () {
    time_t rawtime;
    struct tm *info;
@@ -49,7 +48,7 @@ int anoAtual () {
 }
 
 int validar (Data data) {
-
+    clear();
     // nao existe dia 0 no calendario, data.dia nao pode ser 0
     if (data.dia < 0 || data.dia > 31) {
       printf("\n= Dia precisa ser maior que 0 e menor ou igual a 31. =\n");
@@ -77,7 +76,7 @@ int validar (Data data) {
 
     // nesses meses a data do dia nao pode ser 31
     if (data.dia > 30 && (data.mes == 4 || data.mes == 6 || data.mes == 9 || data.mes == 11)) {
-      printf("\n= Abril, Junho, Setembro Novembro =\n");
+      printf("\n= Abril, Junho, Setembro e Novembro =");
       printf("\n= Esses meses nao podem ter 31 dias. =\n");
       return 1;
     }
@@ -96,9 +95,10 @@ Data dataNascimento() {
     scanf("%d", &data.ano);
 
     condicao = validar(data);
+
     if (condicao == 1) {
       printf("\n===== DATA INVALIDA =====\n");
-      printf("  Digite novamente \n");
+      printf("  Digite novamente \n\n");
     }
 
   } while (condicao == 1);
@@ -109,7 +109,6 @@ Data dataNascimento() {
 Paciente cadastrar() {
   FILE *file;
   Paciente paciente;
-
 
   printf("Primeiro nome: ");
   scanf("%s", &paciente.nome);
