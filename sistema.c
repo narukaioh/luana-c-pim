@@ -24,6 +24,7 @@ int mesAtual(void);
 int validar(Data data);
 Data dataNascimento(void);
 void buscar(int id);
+void buscarNome(void);
 int calcularIdade(Data data);
 int criarId(void);
 void cadastrar(void);
@@ -34,9 +35,9 @@ void listar(void);
 int main() {
   clear();
 
-  cadastrar();
-  listar();
-  // buscar(1);
+  // cadastrar();
+  // listar();
+  buscarNome();
   return 0;
 }
 
@@ -128,6 +129,50 @@ Data dataNascimento() {
 
 void buscar(int id) {
   printf("buscando...");
+}
+
+void buscarNome() {
+
+  FILE * file;
+  Paciente paciente;
+  int encontrados = 0;
+  char nome[20];
+
+  file = fopen("database/pacientes", "rb");
+
+  printf("\nDigite o primeiro nome:");
+  scanf("%s",&nome);
+
+  while(1){
+    fread(&paciente,sizeof(paciente),1,file);
+    if(feof(file)) { break; }
+
+    if(strcmp(nome,paciente.nome) == 0) {
+      printf("\n========================================================\n\n");
+      printf("\t\t BUSCA POR NOME \n");
+      printf("========================================================\n\n");
+
+      printf("\n\n");
+      printf("NOME: %s %s\t", paciente.nome, paciente.sobrenome);
+      printf("IDADE: %d\n\n", paciente.idade);
+      printf("GRUPO RISCO: ");
+      if (paciente.grupoRisco == 0) {
+        printf("nao");
+      } else {
+        printf("sim");
+      }
+      printf("\tDATA NASCIMENTO: %d/%d/%d\t", paciente.dataNascimento.dia, paciente.dataNascimento.mes, paciente.dataNascimento.ano);
+      printf("CPF: %s\n", paciente.cpf);
+
+      printf("========================================================\n\n");
+
+    }
+    encontrados = 1;
+  }
+  if(encontrados == 0) {
+    printf("\nNao encontramos nenhuma ocorrencia com esse nome.");
+  }
+  fclose(file);
 }
 
 int calcularIdade(Data data) {
@@ -248,6 +293,10 @@ void menu () {
           break;
         }
         case 3: {
+          break;
+        }
+        case 4: {
+          buscarNome();
           break;
         }
         default: {
