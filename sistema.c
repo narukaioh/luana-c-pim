@@ -17,18 +17,17 @@ typedef struct paciente {
   Data dataNascimento;
 } Paciente;
 
-Paciente cadastrar(void);
+void cadastrar(void);
 Data dataNascimento(void);
 int validar(Data data);
 int anoAtual(void);
 void clear(void);
+void buscar(int id);
 
-int main()
-{
-  Paciente paciente;
+int main() {
   clear();
-  paciente = cadastrar();
-
+  cadastrar();
+  buscar(1);
   return 0;
 }
 
@@ -47,16 +46,25 @@ int anoAtual () {
    return info->tm_year + 1900;
 }
 
+int mesAtual() {
+   time_t rawtime;
+   struct tm *info;
+   time( &rawtime );
+   info = localtime( &rawtime );
+   return info->tm_mon;
+}
+
 int validar (Data data) {
-    clear();
     // nao existe dia 0 no calendario, data.dia nao pode ser 0
     if (data.dia < 0 || data.dia > 31) {
+      clear();
       printf("\n= Dia precisa ser maior que 0 e menor ou igual a 31. =\n");
       return 1;
     }
 
     // nao existe mes 0 ou maior que 12
     if (data.mes < 0 || data.mes > 12) {
+      clear();
       printf("\n= Mes precisa ser maior que 0 e menor ou igual a 12. =\n");
       return 1;
     }
@@ -64,18 +72,21 @@ int validar (Data data) {
     /* o sistema nao aceita pessoas que tenham nascido no futuro
        nem pessoas que nasceram antes de 1901, pois pode ser fraude. */
     if (data.ano > anoAtual() || data.ano < 1901) {
+      clear();
       printf("\n= Ano precisa ser menor que %d e maior que 1901. =\n", anoAtual());
       return 1;
     }
 
     // se o mes é fevereiro, os dias nao podem ser maiores que 29
     if (data.mes == 2 && data.dia > 29) {
+      clear();
       printf("\n= Mes de fevereiro nao pode ter %d dias. =\n", data.dia);
       return 1;
     }
 
     // nesses meses a data do dia nao pode ser 31
     if (data.dia > 30 && (data.mes == 4 || data.mes == 6 || data.mes == 9 || data.mes == 11)) {
+      clear();
       printf("\n= Abril, Junho, Setembro e Novembro =");
       printf("\n= Esses meses nao podem ter 31 dias. =\n");
       return 1;
@@ -106,21 +117,53 @@ Data dataNascimento() {
   return data;
 }
 
-Paciente cadastrar() {
+void buscar(int id) {
+  printf("buscando...");
+}
+
+int calcularIdade(Data data) {
+  if (mesAtual() > data.mes) {
+    return anoAtual() - data.ano;
+  }
+  return (anoAtual() - data.ano) - 1;
+}
+
+int criarId() {
+  FILE * file;
+	int tamanhoArquivo, tamanhoStructure;
+
+  file = fopen("database/pacientes","r");
+	fseek(file, 0, SEEK_END);
+	tamanhoArquivo = ftell(file);
+	fclose(file);
+
+	tamanhoStructure = sizeof(struct paciente);
+
+	return (tamanhoArquivo/tamanhoStructure) + 1;
+}
+
+void cadastrar() {
   FILE *file;
   Paciente paciente;
+  file = fopen("database/pacientes", "ab");
 
+  paciente.id = criarId();
+  printf("= MATRICULA: %d =\n", paciente.id);
   printf("Primeiro nome: ");
   scanf("%s", &paciente.nome);
 
   printf("Sobrenome: ");
   scanf("%s", &paciente.sobrenome);
 
-  printf("Data nascimento... \n");
-  paciente.dataNascimento = dataNascimento();
-
   printf("CPF: ");
   scanf("%s", &paciente.cpf);
 
-  return paciente;
+  printf("Data nascimento... \n");
+  paciente.dataNascimento = dataNascimento();
+
+  paciente.idade = calcularIdade(paciente.dataNascimento);
+  printf("%d", paciente.idade);
+
+  fwrite(&paciente, sizeof(paciente), 1, file);
+  fclose(file);
 }
