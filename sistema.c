@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <string.h>
 
 typedef struct data {
   int dia;
@@ -29,9 +30,9 @@ int mesAtual(void);
 int validar(Data data);
 Data dataNascimento(void);
 void buscar(int id);
-void buscarNome(void);
+void buscarNome(char * nome);
 int calcularIdade(Data data);
-int criarId(void);
+int criarPacienteId(void);
 void cadastrar(void);
 int login(void);
 void menu (void);
@@ -39,15 +40,19 @@ void listar(void);
 
 int main() {
   clear();
-
-  // cadastrar();
-  // listar();
   menu();
   return 0;
 }
 
+void imprimirCabecalho (char * cabecalho) {
+  clear();
+  printf("==================================\n");
+  printf("\t%s\n", cabecalho);
+  printf("==================================\n\n");
+}
+
 void clear () {
-  for ( int i = 0; i < 50; i++ ) {
+  for (int i=0; i < 3; i++) {
     printf("\n");
   }
   system("clear");
@@ -136,26 +141,18 @@ void buscar(int id) {
   printf("buscando...");
 }
 
-void buscarNome() {
+void buscarNome(char * nome) {
   FILE * file;
   Paciente paciente;
   int encontrados = 0;
-  char nome[20];
 
   file = fopen("database/pacientes", "rb");
-
-  printf("\nDigite o primeiro nome:");
-  scanf("%s",&nome);
-
+  
   while(1){
     fread(&paciente,sizeof(paciente),1,file);
     if(feof(file)) { break; }
 
     if(strcmp(nome,paciente.nome) == 0) {
-      printf("\n========================================================\n\n");
-      printf("\t\t BUSCA POR NOME \n");
-      printf("========================================================\n\n");
-
       printf("\n\n");
       printf("NOME: %s %s\t", paciente.nome, paciente.sobrenome);
       printf("IDADE: %d\n\n", paciente.idade);
@@ -170,8 +167,8 @@ void buscarNome() {
 
       printf("========================================================\n\n");
 
+      encontrados = 1;
     }
-    encontrados = 1;
   }
   if(encontrados == 0) {
     printf("\nNao encontramos nenhuma ocorrencia com esse nome.");
@@ -188,15 +185,14 @@ int buscarUsuario() {
 
   file = fopen("database/usuarios", "rb");
 
-  printf("\nCADASTRE seu LOGIN:");
-  scanf("%s",&login);
+  printf("\nEntre com seu LOGIN:");
+  scanf("%s", login);
 
-  printf("\nCADASTRE seu SENHA:");
-  scanf("%s",&senha);
-  
+  printf("\nEntre com sua SENHA:");
+  scanf("%s", senha);
 
   while(1){
-    fread(&usuario,sizeof(usuario),1,file);
+    fread(&usuario, sizeof(usuario), 1, file);
     if(feof(file)) { break; }
 
     if(strcmp(login, usuario.login) == 0 && strcmp(senha, usuario.senha) == 0) {
@@ -204,11 +200,13 @@ int buscarUsuario() {
       break;
     }
   }
+
   if(encontrados == 0) {
     fclose(file);
     printf("\nLogin não autorizado!.");
     return 1;
   }
+
   fclose(file);
   return 0;
 }
@@ -220,7 +218,8 @@ int calcularIdade(Data data) {
   return (anoAtual() - data.ano) - 1;
 }
 
-int criarId() {
+// criar id de acordo com o arquivo de paciente
+int criarPacienteId() {
   FILE * file;
 	int tamanhoArquivo, tamanhoStructure;
 
@@ -246,16 +245,16 @@ void cadastrar() {
   Paciente paciente;
   file = fopen("database/pacientes", "ab");
 
-  paciente.id = criarId();
+  paciente.id = criarPacienteId();
   printf("= MATRICULA: %d =\n", paciente.id);
   printf("Primeiro nome: ");
-  scanf("%s", &paciente.nome);
+  scanf("%s", paciente.nome);
 
   printf("Sobrenome: ");
-  scanf("%s", &paciente.sobrenome);
+  scanf("%s", paciente.sobrenome);
 
   printf("CPF: ");
-  scanf("%s", &paciente.cpf);
+  scanf("%s", paciente.cpf);
 
   printf("Data nascimento: \n");
   paciente.dataNascimento = dataNascimento();
@@ -273,36 +272,40 @@ void cadastrarUsuario() {
   Usuario usuario;
   file = fopen("database/usuarios", "ab");
   printf("Digite seu login: ");
-  scanf("%s", &usuario.login);
+  scanf("%s", usuario.login);
 
   printf("Digite sua senha: ");
-  scanf("%s", &usuario.senha);
+  scanf("%s", usuario.senha);
 
   fwrite(&usuario, sizeof(usuario), 1, file);
   fclose(file);
 }
 
 int login () {
+  imprimirCabecalho("LOGIN");
   return buscarUsuario();
 }
 
 void listar() {
   FILE * file;
   Paciente paciente;
+  char pause;
   file = fopen("database/pacientes", "rb");
   clear();
-  printf("====================================\n");
-  printf("======== LISTA DE PACIENTES ========\n");
-  printf("====================================\n");
+  printf("==============================================================\n");
+  printf("===================== LISTA DE PACIENTES =====================\n");
+  printf("==============================================================\n");
 
-  printf(" ID\t IDADE \t GRUPO RISCO\t NOME\n");
+  printf(" ID\t %-10s \t IDADE \t %-10s \t GRUPO RISCO\n", "NOME", "CPF");
   while(1) {
     fread(&paciente, sizeof(paciente), 1, file);
     if (feof(file)) { break; }
 
     printf("\n");
     printf(" %d\t", paciente.id);
+    printf(" %-10s\t", paciente.nome);
     printf(" %d\t", paciente.idade);
+    printf(" %-10s\t", paciente.cpf);
     
     if (paciente.grupoRisco == 0) {
       printf(" nao");
@@ -310,17 +313,16 @@ void listar() {
       printf(" sim");
     }
 
-    printf("\t\t %s\t\t", paciente.nome);
   }
 
-  printf("\n\n====================================\n");
-
+  printf("\n\n==============================================================\n");
+  printf("\nDeseja sair? (S/N) ");
   fclose(file);
 }
 
 void menu () {
   int opcao;
-    cadastrarUsuario();
+  do {
     if (login() == 0) {
       do {
         clear();
@@ -338,23 +340,49 @@ void menu () {
         scanf("%d", &opcao);
         switch(opcao) {
           case 1: {
+            imprimirCabecalho("CADASTRAR PACIENTE");
             cadastrar();
             break;
           }
           case 2: {
-            listar();
+            char condicaoListar = 'N';
+            do {
+              listar();
+              scanf("%c", &condicaoListar);
+            } while(condicaoListar != 'S');
             break;
           }
           case 3: {
-            clear();
-            printf("===========================================\n");
-            printf("=========== CADASTRO DE USUARIO ===========\n");
-            printf("===========================================\n");
+            imprimirCabecalho("CADASTRAR USUARIO");
             cadastrarUsuario();
             break;
           }
           case 4: {
-            buscarNome();
+            char condicaoListar = 'N';
+            char nome[20];
+            int opcaoBusca;
+
+            do {
+              imprimirCabecalho("BUSCAR PACIENTE (nome)");
+              printf("\n1) Digite o primeiro nome:");
+              printf("\n2) Sair da busca.\n\n>> ");
+              scanf("%d", &opcaoBusca);
+              switch(opcaoBusca) {
+                case 1: {
+                  fflush(stdout);
+                  printf("\n\nDigite o nome do paciente: ");
+                  scanf("%s", &nome);
+                  clear();
+                  buscarNome(nome);
+                  break;
+                }
+                case 2: {
+                  condicaoListar = 'S';
+                  break;
+                }
+              }
+              system("read -n 1 -s -p \"Aperte qualquer tecla para continuar...\n\"");
+            } while(condicaoListar != 'S');
             break;
           }
           default: {
@@ -362,6 +390,10 @@ void menu () {
             break;
           }
         }
-      } while (opcao != 4);
+      } while (opcao != 5);
+    } else {
+      imprimirCabecalho("CADASTRO DE USUARIO");
+      cadastrarUsuario();
     }
+  } while (opcao != 5);
 }
