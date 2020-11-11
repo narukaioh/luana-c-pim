@@ -44,7 +44,10 @@ int login(void);
 void listar(char * database, char * titulo);
 void menu (void);
 int imprimirCabecalhoMenu(void);
-void listarPacientes(void);
+void listarPacientes(char * database, char * titulo);
+void buscarPaciente(void);
+void imprimirPaciente(Paciente paciente);
+void imprimirPacienteCritico(Paciente paciente);
 
 int main() {
   clear();
@@ -325,25 +328,29 @@ void listar(char * database, char * titulo) {
   char pause;
   printf("\n\n %s \n\n", database);
   file = fopen(database, "rb");
+  clear();
   printf("==============================================================\n");
-  printf("\t\t\t %s\n", titulo);
+  printf("\t\t %s\n", titulo);
   printf("==============================================================\n");
 
-  printf(" ID\t %-10s \t IDADE \t %-10s \t GRUPO RISCO\n", "NOME", "CPF");
+  if (database == "database/pacientes") {
+    printf(" ID\t %-10s \t IDADE \t %-10s \t GRUPO RISCO\n", "NOME", "CPF");
+  }
+
+  if (database == "database/pacientes_criticos"){
+    printf(" CEP\t IDADE \t %-10s \t GRUPO RISCO\n", "NOME");
+  }
+
   while(1) {
     fread(&paciente, sizeof(paciente), 1, file);
     if (feof(file)) { break; }
 
-    printf("\n");
-    printf(" %d\t", paciente.id);
-    printf(" %-10s\t", paciente.nome);
-    printf(" %d\t", paciente.idade);
-    printf(" %-10s\t", paciente.cpf);
+    if (database == "database/pacientes") {
+      imprimirPaciente(paciente);
+    }
     
-    if (paciente.grupoRisco == 0) {
-      printf(" sim");
-    } else {
-      printf(" nao");
+    if (database == "database/pacientes_criticos"){
+      imprimirPacienteCritico(paciente);
     }
 
   }
@@ -366,7 +373,7 @@ void menu () {
             break;
           }
           case 2: {
-            listarPacientes();
+            listarPacientes("database/pacientes", "LISTA DE PACIENTES");
             break;
           }
           case 3: {
@@ -375,39 +382,11 @@ void menu () {
             break;
           }
           case 4: {
-            char condicaoListar = 'N';
-            char nome[20];
-            int opcaoBusca;
-
-            do {
-              imprimirCabecalho("BUSCAR PACIENTE (nome)");
-              printf("\n1) Digite o primeiro nome:");
-              printf("\n2) Sair da busca.\n\n>> ");
-              scanf("%d", &opcaoBusca);
-              switch(opcaoBusca) {
-                case 1: {
-                  fflush(stdout);
-                  printf("\n\nDigite o nome do paciente: ");
-                  scanf("%s", &nome);
-                  clear();
-                  buscarNome(nome);
-                  break;
-                }
-                case 2: {
-                  condicaoListar = 'S';
-                  break;
-                }
-              }
-              system("read -n 1 -s -p \"Aperte qualquer tecla para continuar...\n\"");
-            } while(condicaoListar != 'S');
+            buscarPaciente();
             break;
           }
           case 5: {
-            char condicaoListar = 'N';
-            do {
-              listar("database/pacientes_criticos", "LISTA DE PACIENTES CRITICOS");
-              scanf("%c", &condicaoListar);
-            } while(condicaoListar != 'S');
+            listarPacientes("database/pacientes_criticos", "LISTA DE PACIENTES CRITICOS");
             break;
           }
           default: {
@@ -442,10 +421,66 @@ int imprimirCabecalhoMenu() {
   return opcao;
 }
 
-void listarPacientes () {
+void listarPacientes (char * database, char * titulo) {
   char condicaoListarP = 'N';
   do {
-    listar("database/pacientes", "LISTA DE PACIENTES");
+    listar(database, titulo);
     scanf("%c", &condicaoListarP);
   } while(condicaoListarP != 'S');
+}
+
+void buscarPaciente() {
+  char condicaoListar = 'N';
+  char nome[20];
+  int opcaoBusca;
+
+  do {
+    imprimirCabecalho("BUSCAR PACIENTE (nome)");
+    printf("\n1) Digite o primeiro nome:");
+    printf("\n2) Sair da busca.\n\n>> ");
+    scanf("%d", &opcaoBusca);
+    switch(opcaoBusca) {
+      case 1: {
+        fflush(stdout);
+        printf("\n\nDigite o nome do paciente: ");
+        scanf("%s", &nome);
+        clear();
+        buscarNome(nome);
+        break;
+      }
+      case 2: {
+        condicaoListar = 'S';
+        break;
+      }
+    }
+    system("read -n 1 -s -p \"Aperte qualquer tecla para continuar...\n\"");
+  } while(condicaoListar != 'S');
+}
+
+void imprimirPaciente(Paciente paciente) {
+    printf("\n");
+    printf(" %d\t", paciente.id);
+    printf(" %-10s\t", paciente.nome);
+    printf(" %d\t", paciente.idade);
+    printf(" %-10s\t", paciente.cpf);
+    
+    if (paciente.grupoRisco == 0) {
+      printf(" sim");
+    } else {
+      printf(" nao");
+    }
+}
+
+void imprimirPacienteCritico(Paciente paciente) {
+    printf("\n");
+    printf(" %d\t", paciente.id);
+    printf(" %-10s\t", paciente.nome);
+    printf(" %d\t", paciente.idade);
+    printf(" %-10s\t", paciente.cpf);
+    
+    if (paciente.grupoRisco == 0) {
+      printf(" sim");
+    } else {
+      printf(" nao");
+    }
 }
