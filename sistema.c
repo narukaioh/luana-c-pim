@@ -16,6 +16,7 @@ typedef struct paciente {
   char sobrenome[15];
   char cpf[15];
   int grupoRisco;
+  int comorbidades;
   Data dataNascimento;
 } Paciente;
 
@@ -137,10 +138,6 @@ Data dataNascimento() {
   return data;
 }
 
-void buscar(int id) {
-  printf("buscando...");
-}
-
 void buscarNome(char * nome) {
   FILE * file;
   Paciente paciente;
@@ -186,10 +183,10 @@ int buscarUsuario() {
   file = fopen("database/usuarios", "rb");
 
   printf("\nEntre com seu LOGIN:");
-  scanf("%s", login);
+  scanf("%s", &login);
 
   printf("\nEntre com sua SENHA:");
-  scanf("%s", senha);
+  scanf("%s", &senha);
 
   while(1){
     fread(&usuario, sizeof(usuario), 1, file);
@@ -233,6 +230,14 @@ int criarPacienteId() {
 	return (tamanhoArquivo/tamanhoStructure) + 1;
 }
 
+int descobrirComorbidades() {
+  int opcao = 0;
+  do {
+    scanf("%d", &opcao);
+  } while (opcao != 1 && opcao != 2);
+  return opcao;
+}
+
 int grupoRisco (int idade) {
   if (idade > 60) {
     return 1;
@@ -240,31 +245,52 @@ int grupoRisco (int idade) {
   return 0;
 }
 
+int pacienteCritico(Paciente paciente) {
+  // Se tem comorbidades e se é grupo de risco
+  if (paciente.comorbidades == 1 && paciente.grupoRisco == 0) {
+    return 0;
+  }
+  return 1;
+}
+
 void cadastrar() {
   FILE *file;
+  FILE *file_paciente_critico;
+
   Paciente paciente;
   file = fopen("database/pacientes", "ab");
+  file_paciente_critico = fopen("database/pacientes_criticos", "ab");
 
   paciente.id = criarPacienteId();
-  printf("= MATRICULA: %d =\n", paciente.id);
-  printf("Primeiro nome: ");
-  scanf("%s", paciente.nome);
+  printf("[ MATRICULA: %d ]\n", paciente.id);
+  printf("\nPrimeiro nome: ");
+  scanf("%s", &paciente.nome);
 
-  printf("Sobrenome: ");
-  scanf("%s", paciente.sobrenome);
+  printf("\nSobrenome: ");
+  scanf("%s", &paciente.sobrenome);
 
-  printf("CPF: ");
-  scanf("%s", paciente.cpf);
+  printf("\nCPF: ");
+  scanf("%s", &paciente.cpf);
 
-  printf("Data nascimento: \n");
+  printf("\nTem alguma dessas comorbidades? (S/N)\n");
+  printf("diabetes, hipertensao, cancer...\n\n");
+  printf("1) Sim\n2) Nao\n>> ");
+  paciente.comorbidades = descobrirComorbidades();
+
+  printf("\nData nascimento: \n");
   paciente.dataNascimento = dataNascimento();
 
   paciente.idade = calcularIdade(paciente.dataNascimento);
 
   paciente.grupoRisco = grupoRisco(paciente.idade);
 
+  if (pacienteCritico(paciente) == 0) {
+    fwrite(&paciente, sizeof(paciente), 1, file_paciente_critico);
+  }
+
   fwrite(&paciente, sizeof(paciente), 1, file);
   fclose(file);
+  fclose(file_paciente_critico);
 }
 
 void cadastrarUsuario() {
@@ -272,10 +298,10 @@ void cadastrarUsuario() {
   Usuario usuario;
   file = fopen("database/usuarios", "ab");
   printf("Digite seu login: ");
-  scanf("%s", usuario.login);
+  scanf("%s", &usuario.login);
 
   printf("Digite sua senha: ");
-  scanf("%s", usuario.senha);
+  scanf("%s", &usuario.senha);
 
   fwrite(&usuario, sizeof(usuario), 1, file);
   fclose(file);

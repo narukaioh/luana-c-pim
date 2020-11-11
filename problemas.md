@@ -17,4 +17,16 @@
   escolhida.
   - deve ser removido o menu principal quando a opcao 1 for escolhida
   - deve mostrar um cabecario especifico para tela de cadastro de paciente
-  
+
+5) no cadastro faltam alguns campos para serem adicionados,
+  - o cadastro deve ter:
+    nome, cpf, telefone, endereco, data de nascimento, 
+    email, data do diagnosticos, 
+      comorbidade: (diabetes, obesidade, hipertensao, tuberculose e outros)
+
+6) deve ser criado um novo arquivo onde tenha a lista de pacientes de grupo de risco com comorbidades.
+  - criar uma opcao no menu, para listar os pacientes que estao no arquivo de criticos.
+  - nesse arquivo devem ser salvas as seguintes informacoes:
+    cep, idade, cpf
+
+
