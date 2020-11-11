@@ -25,19 +25,24 @@ typedef struct Usuario {
   char senha[10];
 } Usuario;
 
+void imprimirCabecalho (char * cabecalho);
 void clear(void);
 int anoAtual(void);
 int mesAtual(void);
 int validar(Data data);
 Data dataNascimento(void);
-void buscar(int id);
 void buscarNome(char * nome);
+int buscarUsuario(void);
 int calcularIdade(Data data);
 int criarPacienteId(void);
+int descobrirComorbidades(void);
+int grupoRisco (int idade);
+int pacienteCritico(Paciente paciente);
 void cadastrar(void);
+void cadastrarUsuario(void);
 int login(void);
-void menu (void);
 void listar(char * database, char * titulo);
+void menu (void);
 
 int main() {
   clear();
@@ -215,7 +220,6 @@ int calcularIdade(Data data) {
   return (anoAtual() - data.ano) - 1;
 }
 
-// criar id de acordo com o arquivo de paciente
 int criarPacienteId() {
   FILE * file;
 	int tamanhoArquivo, tamanhoStructure;
