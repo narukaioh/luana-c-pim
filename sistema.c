@@ -10,13 +10,13 @@ typedef struct data {
 } Data;
 
 typedef struct endereco {
-  char CEP;
-  char rua;
+  char CEP[50];
+  char rua[50];
   int numero;
-  char bairro;
-  char cidade;
-  char complemento;
-  char estado;
+  char bairro[50];
+  char cidade[50];
+  char complemento[50];
+  char estado[50];
 } Endereco;
 
 typedef struct paciente {
@@ -63,6 +63,7 @@ void buscarPaciente(void);
 void imprimirPaciente(Paciente paciente);
 void imprimirPacienteCritico(Paciente paciente);
 char * formatarPaciente(Paciente paciente);
+Endereco retornaEndereco(void);
 
 int main() {
   clear();
@@ -144,11 +145,11 @@ Data dataNascimento() {
   Data data;
   int condicao = 1;
   do {
-    printf("  Digite o dia: ");
+    printf("  Digite o dia: (somente numeros)");
     scanf("%d", &data.dia);
-    printf("  Digite o mes: ");
+    printf("  Digite o mes: (somente numeros)");
     scanf("%d", &data.mes);
-    printf("  Digite o ano: ");
+    printf("  Digite o ano: (somente numeros)");
     scanf("%d", &data.ano);
 
     condicao = validar(data);
@@ -292,17 +293,22 @@ void cadastrar() {
 
   paciente.id = criarPacienteId();
   printf("[ MATRICULA: %d ]\n", paciente.id);
-  printf("\nPrimeiro nome: ");
+  printf("\nPrimeiro nome: (sem espacos)");
   scanf("%s", &paciente.nome);
 
-  printf("\nSobrenome: ");
+  printf("\nSobrenome: (sem espacos)");
   scanf("%s", &paciente.sobrenome);
 
-  printf("\nCPF: ");
+  printf("\nTelefone: (apenas numeros)");
+  scanf("%")
+
+  paciente.endereco = retornaEndereco();
+
+  printf("\nCPF: (000.000.000-00)");
   scanf("%s", &paciente.cpf);
 
   printf("\nTem alguma dessas comorbidades? (S/N)\n");
-  printf("diabetes, hipertensao, cancer...\n\n");
+  printf("diabetes, obesidade, hipertensao, tuberculose e outros\n\n");
   printf("1) Sim\n2) Nao\n>> ");
   paciente.comorbidades = descobrirComorbidades();
 
@@ -312,7 +318,6 @@ void cadastrar() {
   paciente.idade = calcularIdade(paciente.dataNascimento);
 
   paciente.grupoRisco = grupoRisco(paciente.idade);
-
 
   if (pacienteCritico(paciente) == 0) {
     fwrite(&paciente, sizeof(paciente), 1, file_paciente_critico);
@@ -511,4 +516,29 @@ void imprimirPacienteCritico(Paciente paciente) {
 
 char * formatarPaciente(Paciente paciente) {
   return "olaaa mundo!";
+}
+
+Endereco retornaEndereco() {
+  Endereco endereco;
+  getchar();
+
+  puts("Rua:");
+  gets(endereco.rua);
+
+  puts("Numero: ");
+  scanf("%d", &endereco.numero);
+
+  puts("Bairro: ");
+  gets(endereco.bairro);
+
+  puts("Complemento: ");
+  gets(endereco.complemento);
+
+  puts("Cidade");
+  gets(endereco.cidade);
+
+  puts("CEP");
+  gets(endereco.CEP);
+
+  return endereco;
 }
