@@ -31,8 +31,8 @@
 
 <!-- 7) deve permitir que todas as informacoes dos usuarios e pacientes estejam em texto.
   - criar um arquivo pacientes.txt com informacoes de todos os pacientes
-  - criar um arquivo pacientes_criticos.txt com informacoes de todos os pacientes criticos -->
-  - criar um arquivo usuarios.txt com todos os usuarios do sistema
+  - criar um arquivo pacientes_criticos.txt com informacoes de todos os pacientes criticos 
+  - criar um arquivo usuarios.txt com todos os usuarios do sistema -->
 
 <!-- 8) Ao tentar listar usuarios, os dados nao ficaram muito bem formatados,
   - deve ser repensada a forma dessa formatacao para caber todas as informacoes na tela
