@@ -6,7 +6,7 @@
   "scripts": {
     "start": "gcc sistema.c -o sistema && ./sistema",
     "test": "gcc teste.c -o teste && ./teste",
-    "clean": "rm database/pacientes.txt database/pacientes_criticos.txt database/pacientes database/pacientes_criticos database/usuarios",
+    "clean": "rm database/usuarios.txt database/pacientes.txt database/pacientes_criticos.txt database/pacientes database/pacientes_criticos database/usuarios",
     "create": "touch database/usuarios",
     "clean:create": "npm run clean && npm run create"
   },

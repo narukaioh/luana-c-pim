@@ -65,6 +65,7 @@ void imprimirPacienteCritico(Paciente paciente);
 void escreverPaciente(Paciente paciente, FILE * file);
 void escreverPacienteCritico(Paciente paciente, FILE * file);
 Endereco retornaEndereco(void);
+void escreverUsuario(Usuario usuario, FILE * file);
 
 int main() {
   clear();
@@ -353,8 +354,10 @@ void cadastrar() {
 
 void cadastrarUsuario() {
   FILE *file;
+  FILE *file_text;
   Usuario usuario;
   file = fopen("database/usuarios", "ab");
+  file_text = fopen("database/usuarios.txt", "a+");
   printf("Digite seu login: ");
   fgets(usuario.login, sizeof(usuario.login), stdin);
   // setbuf(stdin, NULL);
@@ -364,7 +367,10 @@ void cadastrarUsuario() {
   // setbuf(stdin, NULL);
 
   fwrite(&usuario, sizeof(usuario), 1, file);
+  escreverUsuario(usuario, file_text);
+
   fclose(file);
+  fclose(file_text);
 }
 
 int login () {
@@ -594,3 +600,11 @@ Endereco retornaEndereco() {
 
   return endereco;
 }
+
+void escreverUsuario(Usuario usuario, FILE * file) {
+  int result = fprintf(file,"Login: %sSenha: %s\n\n", usuario.login, usuario.senha);  					  
+  if (result == EOF) { 
+    printf("Erro na Gravacao\n");
+  }
+}
+

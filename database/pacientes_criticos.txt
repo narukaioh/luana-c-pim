@@ -1,8 +1,0 @@
-CEP: 91450010
-Nome: ju dantas
-Idade: 80
-
-CEP: 11
-Nome: a
-Idade: 80
-
