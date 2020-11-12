@@ -62,7 +62,8 @@ void listarPacientes(char * database, char * titulo);
 void buscarPaciente(void);
 void imprimirPaciente(Paciente paciente);
 void imprimirPacienteCritico(Paciente paciente);
-char * formatarPaciente(Paciente paciente);
+void escreverPaciente(Paciente paciente, FILE * file);
+void escreverPacienteCritico(Paciente paciente, FILE * file);
 Endereco retornaEndereco(void);
 
 int main() {
@@ -138,6 +139,7 @@ int validar (Data data) {
       printf("\n= Esses meses nao podem ter 31 dias. =\n");
       return 1;
     }
+
     return 0;
 }
 
@@ -145,11 +147,11 @@ Data retornarData() {
   Data data;
   int condicao = 1;
   do {
-    printf("  Digite o dia: (somente numeros)");
+    printf("  (somente numeros)\n  Digite o dia: ");
     scanf("%d", &data.dia);
-    printf("  Digite o mes: (somente numeros)");
+    printf("  (somente numeros)\n  Digite o mes: ");
     scanf("%d", &data.mes);
-    printf("  Digite o ano: (somente numeros)");
+    printf("  (somente numeros)\n  Digite o ano: ");
     scanf("%d", &data.ano);
 
     condicao = validar(data);
@@ -160,7 +162,6 @@ Data retornarData() {
     }
 
   } while (condicao == 1);
-
   return data;
 }
 
@@ -235,6 +236,7 @@ int buscarUsuario() {
 }
 
 int calcularIdade(Data data) {
+  printf("mes atual: %d\nmes nasc: %d", mesAtual(), data.mes);
   if (mesAtual() > data.mes) {
     return anoAtual() - data.ano;
   }
@@ -288,29 +290,27 @@ void cadastrar() {
   file = fopen("database/pacientes", "ab");
   file_text = fopen("database/pacientes.txt", "a+");
 
-  file_paciente_critico = fopen("database/pacientes_criticos", "ab");
   file_paciente_critico_text = fopen("database/pacientes_criticos.txt", "a+");
+  file_paciente_critico = fopen("database/pacientes_criticos", "ab");
 
   paciente.id = criarPacienteId();
   printf("[ MATRICULA: %d ]\n", paciente.id);
-  printf("\nPrimeiro nome: (sem espacos)");
+  printf("\nPrimeiro nome: (sem espacos)\n");
   scanf("%s", &paciente.nome);
 
-  printf("\nSobrenome: (sem espacos)");
+  printf("\nSobrenome: (sem espacos)\n");
   scanf("%s", &paciente.sobrenome);
 
-  printf("\nTelefone: (apenas numeros)");
+  printf("\nTelefone: (apenas numeros)\n");
   scanf("%d", &paciente.telefone);
 
   printf("\nE-mail: ");
   scanf("%s", &paciente.email);
 
-  paciente.endereco = retornaEndereco();
-
-  printf("\nCPF: (000.000.000-00)");
+  printf("\nCPF: (000.000.000-00)\n");
   scanf("%s", &paciente.cpf);
 
-  printf("\nTem alguma dessas comorbidades? (S/N)\n");
+  printf("\nTem alguma dessas comorbidades?\n");
   printf("diabetes, obesidade, hipertensao, tuberculose e outros\n\n");
   printf("1) Sim\n2) Nao\n>> ");
   paciente.comorbidades = descobrirComorbidades();
@@ -318,20 +318,21 @@ void cadastrar() {
   printf("\nData nascimento: \n");
   paciente.data_nascimento = retornarData();
 
-  printf("\nData do diagnostico: ");
+  printf("\nData do diagnostico: \n");
   paciente.data_diagnostico = retornarData();
 
   paciente.idade = calcularIdade(paciente.data_nascimento);
 
   paciente.grupoRisco = grupoRisco(paciente.idade);
+  paciente.endereco = retornaEndereco();
 
   if (pacienteCritico(paciente) == 0) {
+    escreverPacienteCritico(paciente, file_paciente_critico_text);
     fwrite(&paciente, sizeof(paciente), 1, file_paciente_critico);
-    fputs(formatarPaciente(paciente), file_paciente_critico_text);
   }
 
   fwrite(&paciente, sizeof(paciente), 1, file);
-  fputs(formatarPaciente(paciente), file_text);
+  escreverPaciente(paciente, file_text);
 
   fclose(file);
   fclose(file_text);
@@ -520,31 +521,65 @@ void imprimirPacienteCritico(Paciente paciente) {
     }
 }
 
-char * formatarPaciente(Paciente paciente) {
-  return "olaaa mundo!";
+void escreverPacienteCritico(Paciente paciente, FILE * file) {
+  int result = fprintf(file,"CEP: %s | idade: %d | nome: %s\n", paciente.endereco.CEP, paciente.idade, paciente.nome);  					  
+  if (result == EOF) { 
+    printf("Erro na Gravacao\n");
+  }
+}
+
+void escreverPaciente(Paciente paciente, FILE * file) {
+  int tem_comorbidades[3], esta_no_grupo_risco[3];
+  strcpy(tem_comorbidades, "nao");
+  if (paciente.comorbidades == 1) {
+    strcpy(tem_comorbidades, "sim");
+  }
+
+  strcpy(esta_no_grupo_risco, "nao");
+  if (esta_no_grupo_risco == 0) {
+    strcpy(esta_no_grupo_risco, "sim");
+  }
+
+  fprintf(file,"Id: %d | ", paciente.id);
+  fprintf(file,"Nome: %s | ", paciente.nome);
+  fprintf(file,"Sobrenome: %s | ", paciente.sobrenome);
+  fprintf(file,"Idade: %d | ", paciente.idade);
+  fprintf(file,"Email: %s | ", paciente.email);
+  fprintf(file,"CPF: %s | ", paciente.cpf);
+  fprintf(file,"Telefone: %d | ", paciente.telefone);
+  fprintf(file,"Comorbidades: %d | ", tem_comorbidades);
+  fprintf(file,"Grupo de risco: %d | ", esta_no_grupo_risco);
+  fprintf(file,"Data nascimento: %d/%d/%d | ", paciente.data_nascimento.dia, paciente.data_nascimento.mes, paciente.data_nascimento.ano);
+  fprintf(file,"Data diagnostico: %d/%d/%d | ", paciente.data_diagnostico.dia, paciente.data_diagnostico.mes, paciente.data_diagnostico.ano);
+  fprintf(file,"Rua: %s | ", paciente.endereco.rua);
+  fprintf(file,"Numero: %d | ", paciente.endereco.numero);      
+  fprintf(file,"Complemento: %s | ", paciente.endereco.complemento);
+  fprintf(file,"Bairro: %s | ", paciente.endereco.bairro);
+  fprintf(file,"Cidade: %s | ", paciente.endereco.cidade);
+  fprintf(file,"Estado: %s | ", paciente.endereco.estado);
+  fprintf(file,"CEP: %s\n", paciente.endereco.CEP);
 }
 
 Endereco retornaEndereco() {
   Endereco endereco;
-  getchar();
 
-  puts("Rua:");
-  gets(endereco.rua);
+  printf("Rua: ");
+  scanf("%s", &endereco.rua);
 
-  puts("Numero: ");
+  printf("Numero: ");
   scanf("%d", &endereco.numero);
 
-  puts("Bairro: ");
-  gets(endereco.bairro);
+  printf("Bairro: ");
+  scanf("%s", &endereco.bairro);
 
-  puts("Complemento: ");
-  gets(endereco.complemento);
+  printf("Complemento: ");
+  scanf("%s", &endereco.complemento);
 
-  puts("Cidade");
-  gets(endereco.cidade);
+  printf("Cidade");
+  scanf("%s", &endereco.cidade);
 
-  puts("CEP");
-  gets(endereco.CEP);
+  printf("CEP");
+  scanf("%s", &endereco.CEP);
 
   return endereco;
 }
