@@ -1,1 +1,0 @@
-Id: 1 | Nome: ju | Sobrenome: dantas | Idade: 80 | Email: jdantas@email.com | CPF: 000.111.111-99 | Telefone: -892620788 | Comorbidades: -349194932 | Grupo de risco: -349194944 | Data nascimento: 1/1/1940 | Data diagnostico: 20/1/2019 | Rua: fulana | Numero: 15 | Complemento: 14c | Bairro: cicrano | Cidade: sao_paulo | Estado:  | CEP: 995000-000
