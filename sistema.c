@@ -22,13 +22,13 @@ typedef struct endereco {
 typedef struct paciente {
   int id;
   int idade;
-  char nome[15];
-  char sobrenome[15];
+  char nome[50];
+  char sobrenome[50];
   char cpf[15];
-  int grupoRisco;
+  int grupo_risco;
   int comorbidades;
   char email[50];
-  int telefone;
+  long int telefone;
   Data data_nascimento;
   Data data_diagnostico;
   Endereco endereco;
@@ -50,7 +50,7 @@ int buscarUsuario(void);
 int calcularIdade(Data data);
 int criarPacienteId(void);
 int descobrirComorbidades(void);
-int grupoRisco (int idade);
+int grupoRisco(int idade);
 int pacienteCritico(Paciente paciente);
 void cadastrar(void);
 void cadastrarUsuario(void);
@@ -181,7 +181,7 @@ void buscarNome(char * nome) {
       printf("NOME: %s %s\t", paciente.nome, paciente.sobrenome);
       printf("IDADE: %d\n\n", paciente.idade);
       printf("GRUPO RISCO: ");
-      if (paciente.grupoRisco == 0) {
+      if (paciente.grupo_risco == 0) {
         printf("nao");
       } else {
         printf("sim");
@@ -210,10 +210,14 @@ int buscarUsuario() {
   file = fopen("database/usuarios", "rb");
 
   printf("\nEntre com seu LOGIN:");
-  scanf("%s", &login);
+  fgets(usuario.login, sizeof(usuario.login), stdin);
+  strcpy(login, usuario.login);
+  // setbuf(stdin, NULL);
 
   printf("\nEntre com sua SENHA:");
-  scanf("%s", &senha);
+  fgets(usuario.senha, sizeof(usuario.senha), stdin);
+  strcpy(senha, usuario.senha);
+  // setbuf(stdin, NULL);
 
   while(1){
     fread(&usuario, sizeof(usuario), 1, file);
@@ -236,7 +240,6 @@ int buscarUsuario() {
 }
 
 int calcularIdade(Data data) {
-  printf("mes atual: %d\nmes nasc: %d", mesAtual(), data.mes);
   if (mesAtual() > data.mes) {
     return anoAtual() - data.ano;
   }
@@ -274,7 +277,7 @@ int grupoRisco (int idade) {
 
 int pacienteCritico(Paciente paciente) {
   // Se tem comorbidades e se é grupo de risco
-  if (paciente.comorbidades == 1 && paciente.grupoRisco == 0) {
+  if (paciente.comorbidades == 1 && paciente.grupo_risco == 0) {
     return 0;
   }
   return 1;
@@ -295,20 +298,27 @@ void cadastrar() {
 
   paciente.id = criarPacienteId();
   printf("[ MATRICULA: %d ]\n", paciente.id);
+
+  setbuf(stdin, NULL);
   printf("\nPrimeiro nome: (sem espacos)\n");
-  scanf("%s", &paciente.nome);
+  fgets(paciente.nome, sizeof(paciente.nome), stdin);
+  setbuf(stdin, NULL);
 
   printf("\nSobrenome: (sem espacos)\n");
-  scanf("%s", &paciente.sobrenome);
+  fgets(paciente.sobrenome, sizeof(paciente.sobrenome), stdin);
+  setbuf(stdin, NULL);
 
   printf("\nTelefone: (apenas numeros)\n");
-  scanf("%d", &paciente.telefone);
-
+  scanf("%ld", &paciente.telefone);
+  setbuf(stdin, NULL);
+  
   printf("\nE-mail: ");
-  scanf("%s", &paciente.email);
+  fgets(paciente.email, sizeof(paciente.email), stdin);
+  setbuf(stdin, NULL);
 
   printf("\nCPF: (000.000.000-00)\n");
-  scanf("%s", &paciente.cpf);
+  fgets(paciente.cpf, sizeof(paciente.cpf), stdin);
+  setbuf(stdin, NULL);
 
   printf("\nTem alguma dessas comorbidades?\n");
   printf("diabetes, obesidade, hipertensao, tuberculose e outros\n\n");
@@ -323,7 +333,8 @@ void cadastrar() {
 
   paciente.idade = calcularIdade(paciente.data_nascimento);
 
-  paciente.grupoRisco = grupoRisco(paciente.idade);
+  paciente.grupo_risco = grupoRisco(paciente.idade);
+
   paciente.endereco = retornaEndereco();
 
   if (pacienteCritico(paciente) == 0) {
@@ -345,10 +356,12 @@ void cadastrarUsuario() {
   Usuario usuario;
   file = fopen("database/usuarios", "ab");
   printf("Digite seu login: ");
-  scanf("%s", &usuario.login);
+  fgets(usuario.login, sizeof(usuario.login), stdin);
+  // setbuf(stdin, NULL);
 
   printf("Digite sua senha: ");
-  scanf("%s", &usuario.senha);
+  fgets(usuario.senha, sizeof(usuario.senha), stdin);
+  // setbuf(stdin, NULL);
 
   fwrite(&usuario, sizeof(usuario), 1, file);
   fclose(file);
@@ -370,11 +383,11 @@ void listar(char * database, char * titulo) {
   printf("\t\t %s\n", titulo);
   printf("==============================================================\n");
 
-  if (database == "database/pacientes") {
+  if (strcmp(database, "database/pacientes") == 0) {
     printf(" ID\t %-10s \t IDADE \t %-10s \t GRUPO RISCO\n", "NOME", "CPF");
   }
 
-  if (database == "database/pacientes_criticos"){
+  if (strcmp(database, "database/pacientes_criticos") == 0){
     printf(" CEP\t IDADE \t %-10s \t GRUPO RISCO\n", "NOME");
   }
 
@@ -382,11 +395,11 @@ void listar(char * database, char * titulo) {
     fread(&paciente, sizeof(paciente), 1, file);
     if (feof(file)) { break; }
 
-    if (database == "database/pacientes") {
+    if (strcmp(database, "database/pacientes") == 0) {
       imprimirPaciente(paciente);
     }
     
-    if (database == "database/pacientes_criticos"){
+    if (strcmp(database, "database/pacientes_criticos") == 0){
       imprimirPacienteCritico(paciente);
     }
 
@@ -480,7 +493,8 @@ void buscarPaciente() {
       case 1: {
         fflush(stdout);
         printf("\n\nDigite o nome do paciente: ");
-        scanf("%s", &nome);
+        scanf("%[^\n]s", nome);
+        setbuf(stdin, NULL);
         clear();
         buscarNome(nome);
         break;
@@ -501,7 +515,7 @@ void imprimirPaciente(Paciente paciente) {
     printf(" %d\t", paciente.idade);
     printf(" %-10s\t", paciente.cpf);
     
-    if (paciente.grupoRisco == 0) {
+    if (paciente.grupo_risco == 0) {
       printf(" sim");
     } else {
       printf(" nao");
@@ -514,7 +528,7 @@ void imprimirPacienteCritico(Paciente paciente) {
     printf(" %d\t", paciente.idade);
     printf(" %-10s\t", paciente.nome);
     
-    if (paciente.grupoRisco == 0) {
+    if (paciente.grupo_risco == 0) {
       printf(" sim");
     } else {
       printf(" nao");
@@ -522,64 +536,74 @@ void imprimirPacienteCritico(Paciente paciente) {
 }
 
 void escreverPacienteCritico(Paciente paciente, FILE * file) {
-  int result = fprintf(file,"CEP: %s | idade: %d | nome: %s\n", paciente.endereco.CEP, paciente.idade, paciente.nome);  					  
+  int result = fprintf(file,"CEP: %sNome: %sIdade: %d\n\n", paciente.endereco.CEP, paciente.nome, paciente.idade);  					  
   if (result == EOF) { 
     printf("Erro na Gravacao\n");
   }
 }
 
 void escreverPaciente(Paciente paciente, FILE * file) {
-  int tem_comorbidades[3], esta_no_grupo_risco[3];
-  strcpy(tem_comorbidades, "nao");
+  char tem_comorbidades[50], esta_no_grupo_risco[50];
+
   if (paciente.comorbidades == 1) {
     strcpy(tem_comorbidades, "sim");
+  } else {
+    strcpy(tem_comorbidades, "nao");
   }
 
-  strcpy(esta_no_grupo_risco, "nao");
-  if (esta_no_grupo_risco == 0) {
+  if (paciente.grupo_risco == 0) {
     strcpy(esta_no_grupo_risco, "sim");
+  } else {
+    strcpy(esta_no_grupo_risco, "nao");
   }
 
-  fprintf(file,"Id: %d | ", paciente.id);
-  fprintf(file,"Nome: %s | ", paciente.nome);
-  fprintf(file,"Sobrenome: %s | ", paciente.sobrenome);
-  fprintf(file,"Idade: %d | ", paciente.idade);
-  fprintf(file,"Email: %s | ", paciente.email);
-  fprintf(file,"CPF: %s | ", paciente.cpf);
-  fprintf(file,"Telefone: %d | ", paciente.telefone);
-  fprintf(file,"Comorbidades: %d | ", tem_comorbidades);
-  fprintf(file,"Grupo de risco: %d | ", esta_no_grupo_risco);
-  fprintf(file,"Data nascimento: %d/%d/%d | ", paciente.data_nascimento.dia, paciente.data_nascimento.mes, paciente.data_nascimento.ano);
-  fprintf(file,"Data diagnostico: %d/%d/%d | ", paciente.data_diagnostico.dia, paciente.data_diagnostico.mes, paciente.data_diagnostico.ano);
-  fprintf(file,"Rua: %s | ", paciente.endereco.rua);
-  fprintf(file,"Numero: %d | ", paciente.endereco.numero);      
-  fprintf(file,"Complemento: %s | ", paciente.endereco.complemento);
-  fprintf(file,"Bairro: %s | ", paciente.endereco.bairro);
-  fprintf(file,"Cidade: %s | ", paciente.endereco.cidade);
-  fprintf(file,"Estado: %s | ", paciente.endereco.estado);
+  fprintf(file,"Id: %d | Idade: %d ", paciente.id, paciente.idade);
+  fprintf(file," | Telefone: %ld\n", paciente.telefone);
+  fprintf(file,"Data nascimento: %d/%d/%d", paciente.data_nascimento.dia, paciente.data_nascimento.mes, paciente.data_nascimento.ano);
+  fprintf(file," | Data diagnostico: %d/%d/%d\n", paciente.data_diagnostico.dia, paciente.data_diagnostico.mes, paciente.data_diagnostico.ano);
+
+  fprintf(file,"Nome: %s", paciente.nome);
+  fprintf(file,"Sobrenome: %s", paciente.sobrenome);
+  fprintf(file,"Email: %s", paciente.email);
+  fprintf(file,"CPF: %s\n", paciente.cpf);
+  fprintf(file,"Comorbidades: %s\n", tem_comorbidades);
+  fprintf(file,"Grupo de risco: %s\n", esta_no_grupo_risco);
+  fprintf(file,"Rua: %s", paciente.endereco.rua);
+  fprintf(file,"Numero: %d ", paciente.endereco.numero);      
+  fprintf(file,"Complemento: %s", paciente.endereco.complemento);
+  fprintf(file,"Bairro: %s", paciente.endereco.bairro);
+  fprintf(file,"Cidade: %s", paciente.endereco.cidade);
+  fprintf(file,"Estado: %s", paciente.endereco.estado);
   fprintf(file,"CEP: %s\n", paciente.endereco.CEP);
 }
 
 Endereco retornaEndereco() {
   Endereco endereco;
 
-  printf("Rua: ");
-  scanf("%s", &endereco.rua);
+  setbuf(stdin, NULL);
+  printf("\nRua: ");
+  fgets(endereco.rua, sizeof(endereco.rua), stdin);
+  setbuf(stdin, NULL);
 
-  printf("Numero: ");
+  printf("\n(somente numeros)\nNumero: ");
   scanf("%d", &endereco.numero);
+  setbuf(stdin, NULL);
 
-  printf("Bairro: ");
-  scanf("%s", &endereco.bairro);
+  printf("\nBairro: ");
+  fgets(endereco.bairro, sizeof(endereco.bairro), stdin);
+  setbuf(stdin, NULL);
 
-  printf("Complemento: ");
-  scanf("%s", &endereco.complemento);
+  printf("\nComplemento: ");
+  fgets(endereco.complemento, sizeof(endereco.complemento), stdin);
+  setbuf(stdin, NULL);
 
-  printf("Cidade");
-  scanf("%s", &endereco.cidade);
+  printf("\nCidade: ");
+  fgets(endereco.cidade, sizeof(endereco.cidade), stdin);
+  setbuf(stdin, NULL);
 
-  printf("CEP");
-  scanf("%s", &endereco.CEP);
+  printf("\nCEP: ");
+  fgets(endereco.CEP, sizeof(endereco.CEP), stdin);
+  setbuf(stdin, NULL);
 
   return endereco;
 }

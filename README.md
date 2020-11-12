@@ -25,13 +25,19 @@
       comorbidade: (diabetes, obesidade, hipertensao, tuberculose e outros) -->
 
 <!-- 6) deve ser criado um novo arquivo onde tenha a lista de pacientes de grupo de risco com comorbidades.
-  - criar uma opcao no menu, para listar os pacientes que estao no arquivo de criticos. -->
+  - criar uma opcao no menu, para listar os pacientes que estao no arquivo de criticos.
   - nesse arquivo devem ser salvas as seguintes informacoes:
-    cep, idade, cpf
+    cep, idade, cpf -->
 
-7) deve permitir que todas as informacoes dos usuarios e pacientes estejam em texto.
+<!-- 7) deve permitir que todas as informacoes dos usuarios e pacientes estejam em texto.
   - criar um arquivo pacientes.txt com informacoes de todos os pacientes
-  - criar um arquivo pacientes_criticos.txt com informacoes de todos os pacientes criticos
+  - criar um arquivo pacientes_criticos.txt com informacoes de todos os pacientes criticos -->
   - criar um arquivo usuarios.txt com todos os usuarios do sistema
 
+8) Ao tentar listar usuarios, os dados nao ficaram muito bem formatados,
+  - deve ser repensada a forma dessa formatacao para caber todas as informacoes na tela
+  dica: imprimir o nome do usuario por ultimo
 
+9) ao tentar buscar o usuario por nome o programa nao encontra nada, e tambem ocorre um erro
+  onde o mesmo não consegue ser encerrado.
+  - deve verificar o tamanho da variavel, ver se ela é compativel com o tamanho da estrutura paciente, e tambem trocar scanf por fgets
