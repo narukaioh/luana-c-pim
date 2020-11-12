@@ -27,10 +27,10 @@ typedef struct paciente {
   char cpf[15];
   int grupoRisco;
   int comorbidades;
-  char email;
+  char email[50];
   int telefone;
-  Data dataNascimento;
-  Data dataDiagnostico;
+  Data data_nascimento;
+  Data data_diagnostico;
   Endereco endereco;
 } Paciente;
 
@@ -44,7 +44,7 @@ void clear(void);
 int anoAtual(void);
 int mesAtual(void);
 int validar(Data data);
-Data dataNascimento(void);
+Data retornarData(void);
 void buscarNome(char * nome);
 int buscarUsuario(void);
 int calcularIdade(Data data);
@@ -141,7 +141,7 @@ int validar (Data data) {
     return 0;
 }
 
-Data dataNascimento() {
+Data retornarData() {
   Data data;
   int condicao = 1;
   do {
@@ -185,7 +185,7 @@ void buscarNome(char * nome) {
       } else {
         printf("sim");
       }
-      printf("\tDATA NASCIMENTO: %d/%d/%d\t", paciente.dataNascimento.dia, paciente.dataNascimento.mes, paciente.dataNascimento.ano);
+      printf("\tDATA NASCIMENTO: %d/%d/%d\t", paciente.data_nascimento.dia, paciente.data_nascimento.mes, paciente.data_nascimento.ano);
       printf("CPF: %s\n", paciente.cpf);
 
       printf("========================================================\n\n");
@@ -300,7 +300,10 @@ void cadastrar() {
   scanf("%s", &paciente.sobrenome);
 
   printf("\nTelefone: (apenas numeros)");
-  scanf("%")
+  scanf("%d", &paciente.telefone);
+
+  printf("\nE-mail: ");
+  scanf("%s", &paciente.email);
 
   paciente.endereco = retornaEndereco();
 
@@ -313,9 +316,12 @@ void cadastrar() {
   paciente.comorbidades = descobrirComorbidades();
 
   printf("\nData nascimento: \n");
-  paciente.dataNascimento = dataNascimento();
+  paciente.data_nascimento = retornarData();
 
-  paciente.idade = calcularIdade(paciente.dataNascimento);
+  printf("\nData do diagnostico: ");
+  paciente.data_diagnostico = retornarData();
+
+  paciente.idade = calcularIdade(paciente.data_nascimento);
 
   paciente.grupoRisco = grupoRisco(paciente.idade);
 
