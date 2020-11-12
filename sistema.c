@@ -178,7 +178,7 @@ void buscarNome(char * nome) {
 
     if(strcmp(nome,paciente.nome) == 0) {
       printf("\n\n");
-      printf("NOME: %s %s\t", paciente.nome, paciente.sobrenome);
+      printf("NOME: %s", paciente.nome);
       printf("IDADE: %d\n\n", paciente.idade);
       printf("GRUPO RISCO: ");
       if (paciente.grupo_risco == 0) {
@@ -384,11 +384,7 @@ void listar(char * database, char * titulo) {
   printf("==============================================================\n");
 
   if (strcmp(database, "database/pacientes") == 0) {
-    printf(" ID\t %-10s \t IDADE \t %-10s \t GRUPO RISCO\n", "NOME", "CPF");
-  }
-
-  if (strcmp(database, "database/pacientes_criticos") == 0){
-    printf(" CEP\t IDADE \t %-10s \t GRUPO RISCO\n", "NOME");
+    printf(" ID\t IDADE \t %-10s \t GRUPO RISCO\t %-10s\n", "CPF", "NOME");
   }
 
   while(1) {
@@ -481,7 +477,7 @@ void listarPacientes (char * database, char * titulo) {
 
 void buscarPaciente() {
   char condicaoListar = 'N';
-  char nome[20];
+  char nome[50];
   int opcaoBusca;
 
   do {
@@ -489,11 +485,11 @@ void buscarPaciente() {
     printf("\n1) Digite o primeiro nome:");
     printf("\n2) Sair da busca.\n\n>> ");
     scanf("%d", &opcaoBusca);
+    setbuf(stdin, NULL);
     switch(opcaoBusca) {
       case 1: {
-        fflush(stdout);
         printf("\n\nDigite o nome do paciente: ");
-        scanf("%[^\n]s", nome);
+        fgets(nome, sizeof(nome), stdin);
         setbuf(stdin, NULL);
         clear();
         buscarNome(nome);
@@ -511,28 +507,19 @@ void buscarPaciente() {
 void imprimirPaciente(Paciente paciente) {
     printf("\n");
     printf(" %d\t", paciente.id);
-    printf(" %-10s\t", paciente.nome);
     printf(" %d\t", paciente.idade);
     printf(" %-10s\t", paciente.cpf);
     
     if (paciente.grupo_risco == 0) {
-      printf(" sim");
+      printf(" %-10s\t", "sim");
     } else {
-      printf(" nao");
+      printf(" %-10s\t", "nao");
     }
+    printf(" %-10s\t", paciente.nome);
 }
 
 void imprimirPacienteCritico(Paciente paciente) {
-    printf("\n");
-    printf(" %s\t", paciente.endereco.CEP);
-    printf(" %d\t", paciente.idade);
-    printf(" %-10s\t", paciente.nome);
-    
-    if (paciente.grupo_risco == 0) {
-      printf(" sim");
-    } else {
-      printf(" nao");
-    }
+  printf("CEP: %sIdade: %d | Grupo de risco: %-10s\nNome: %-10s\n\n", paciente.endereco.CEP, paciente.idade, "sim", paciente.nome);
 }
 
 void escreverPacienteCritico(Paciente paciente, FILE * file) {

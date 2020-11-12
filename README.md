@@ -34,10 +34,10 @@
   - criar um arquivo pacientes_criticos.txt com informacoes de todos os pacientes criticos -->
   - criar um arquivo usuarios.txt com todos os usuarios do sistema
 
-8) Ao tentar listar usuarios, os dados nao ficaram muito bem formatados,
+<!-- 8) Ao tentar listar usuarios, os dados nao ficaram muito bem formatados,
   - deve ser repensada a forma dessa formatacao para caber todas as informacoes na tela
-  dica: imprimir o nome do usuario por ultimo
+  dica: imprimir o nome do usuario por ultimo -->
 
-9) ao tentar buscar o usuario por nome o programa nao encontra nada, e tambem ocorre um erro
+<!-- 9) ao tentar buscar o usuario por nome o programa nao encontra nada, e tambem ocorre um erro
   onde o mesmo não consegue ser encerrado.
-  - deve verificar o tamanho da variavel, ver se ela é compativel com o tamanho da estrutura paciente, e tambem trocar scanf por fgets
+  - deve verificar o tamanho da variavel, ver se ela é compativel com o tamanho da estrutura paciente, e tambem trocar scanf por fgets -->
