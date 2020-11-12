@@ -358,13 +358,14 @@ void cadastrarUsuario() {
   Usuario usuario;
   file = fopen("database/usuarios", "ab");
   file_text = fopen("database/usuarios.txt", "a+");
+  setbuf(stdin, NULL);
   printf("Digite seu login: ");
   fgets(usuario.login, sizeof(usuario.login), stdin);
-  // setbuf(stdin, NULL);
+  setbuf(stdin, NULL);
 
   printf("Digite sua senha: ");
   fgets(usuario.senha, sizeof(usuario.senha), stdin);
-  // setbuf(stdin, NULL);
+  setbuf(stdin, NULL);
 
   fwrite(&usuario, sizeof(usuario), 1, file);
   escreverUsuario(usuario, file_text);
